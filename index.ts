@@ -2,7 +2,7 @@
 El mensaje de commit sigue la convención Conventional Commits: 
   feat: para nueva funcionalidad.
   fix: para correcciones.
-  chore: para tareas de mantenimiento. 
+  chore: para tareas de mantenimiento 
 Usaremos esta convención durante todo el proyecto.
 */
 
@@ -16,6 +16,11 @@ const rl = readline.createInterface({ input, output });
 let systemName: string = "Task Manager";
 let version: number = 0.3;
 let username: string = "adrian_mejia";
+interface Task {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 console.log(
   `  ================================
@@ -23,9 +28,44 @@ console.log(
      ¡Bienvenido, ${username}!
   ================================`
 );
-const tasks: string[] = [];
 
-// Variable para controlar la opción del usuario
+// Arreglo principal de tareas y contador de IDs
+const tasks: Task[] = [];
+let idCounter: number = 1;
+
+// Arrow functions para cada acción
+const addTask = (title: string): void => {
+  const newTask: Task = {
+    id: idCounter++,
+    title: title,
+    completed: false,
+  };
+  tasks.push(newTask);
+  console.log(`✅ Task "${title}" was added!`);
+};
+
+const removeTask = (): void => {
+  if (tasks.length === 0) {
+    console.log("⚠️ No task to delete.");
+  } else {
+    const deletedTask = tasks.pop();
+    console.log(`🗑️ Task "${deletedTask?.title}" deleted`);
+  }
+};
+
+const listTasks = (): void => {
+  if (tasks.length === 0) {
+    console.log("📭 No registered tasks.");
+  } else {
+    console.log("\n📋 Your current tasks:");
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      const status = task.completed ? "completed" : "pending";
+      console.log(`[${task.id}] ${task.title} - ${status}`);
+    }
+  }
+};
+
 let opcion: string = "";
 
 // El ciclo se repite mientras la opción NO sea "4" (Salir)
@@ -38,31 +78,18 @@ while (opcion !== "4") {
 
   opcion = await rl.question("Choose an option (1-4): ");
 
-  // 1. Agregar tarea con .push()
+  // 1. Agregar tarea
   if (opcion === "1") {
     const titulo = await rl.question("Write the task title: ");
-    tasks.push(titulo);
-    console.log(`✅ Task "${titulo}" was added!`);
+    addTask(titulo);
 
-  // 2. Eliminar última tarea con .pop()
+  // 2. Eliminar última tarea
   } else if (opcion === "2") {
-    if (tasks.length === 0) {
-      console.log("⚠️ No task to delete.");
-    } else {
-      const eliminada = tasks.pop();
-      console.log(`🗑️ Task "${eliminada}" deleted`);
-    }
+    removeTask();
 
-  // 3. Listar tareas con un ciclo for
+  // 3. Listar tareas
   } else if (opcion === "3") {
-    if (tasks.length === 0) {
-      console.log("📭 No registered tasks.");
-    } else {
-      console.log("\n📋 Your current tasks:");
-      for (let i = 0; i < tasks.length; i++) {
-        console.log(`${i + 1}. ${tasks[i]}`);
-      }
-    }
+    listTasks();
 
   // 4. Salir
   } else if (opcion === "4") {
